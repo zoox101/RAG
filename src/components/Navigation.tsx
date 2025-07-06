@@ -32,22 +32,6 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange }) =>
                 </h1>
                 <div style={{ display: 'flex', gap: '8px' }}>
                     <button
-                        onClick={() => onPageChange('chat')}
-                        style={{
-                            padding: '8px 16px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            background: currentPage === 'chat' ? '#007aff' : '#e9ecef',
-                            color: currentPage === 'chat' ? 'white' : '#495057',
-                            fontWeight: currentPage === 'chat' ? '600' : '400',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            transition: 'all 0.2s ease'
-                        }}
-                    >
-                        Chat
-                    </button>
-                    <button
                         onClick={() => onPageChange('chat-with-rag')}
                         style={{
                             padding: '8px 16px',
@@ -62,6 +46,22 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange }) =>
                         }}
                     >
                         Chat with RAG
+                    </button>
+                    <button
+                        onClick={() => onPageChange('chat')}
+                        style={{
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            background: currentPage === 'chat' ? '#007aff' : '#e9ecef',
+                            color: currentPage === 'chat' ? 'white' : '#495057',
+                            fontWeight: currentPage === 'chat' ? '600' : '400',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        Chat
                     </button>
                     <button
                         onClick={() => onPageChange('vector-search')}
