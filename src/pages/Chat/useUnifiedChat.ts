@@ -1,13 +1,41 @@
 import { useState, useEffect, useRef } from 'react';
+import { loadTemplate } from './utils/loadTemplate';
 import { 
     submitMessageToLLM, 
     createPlaceholderMessage, 
     updateLastFriendMessage, 
     addErrorMessage,
     Message 
-} from './messageSubmission';
-import getPrompt from './getPrompt';
+} from './utils/messageSubmission';
+import { getRagContext } from './utils/getRagContext';
 
+
+const getFinalPrompt = async (useRagMode: boolean, currentUserMessage: string) => {
+    // Getting the prompt to submit
+    let finalPrompt = '';
+    if (useRagMode) {
+        // Get RAG context using the utility
+        const ragResult = await getRagContext(currentUserMessage);
+        
+        if (!ragResult.success) {
+            throw new Error(ragResult.error || 'Failed to get RAG context');
+        }
+
+        // Create enhanced prompt with retrieved context
+        finalPrompt = await loadTemplate("rag", {
+            context: ragResult.context || '',
+            userQuestion: currentUserMessage
+        });
+
+        console.log('🎯 Enhanced prompt created:', finalPrompt);
+    } else {
+        // Create simple prompt without conversation history
+        finalPrompt = await loadTemplate("chat", {
+            userQuestion: currentUserMessage
+        });
+    }
+    return finalPrompt;
+}
 
 export const useUnifiedChat = (useRagMode: boolean = true) => {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -42,14 +70,14 @@ export const useUnifiedChat = (useRagMode: boolean = true) => {
                 createPlaceholderMessage(setMessages);
 
                 const systemType = useRagMode ? 'RAG' : 'Chat';
-                const finalPrompt = await getPrompt(useRagMode, currentUserMessage);
+                const finalPrompt = await getFinalPrompt(useRagMode, currentUserMessage);
 
                 console.log('📤 Sending to model:', finalPrompt);
 
                 // Submit message to LLM using shared logic
                 const result = await submitMessageToLLM(
                     finalPrompt,
-                    (text) => updateLastFriendMessage(setMessages, text)
+                    (text: string) => updateLastFriendMessage(setMessages, text)
                 );
 
                 if (!result.success) {
