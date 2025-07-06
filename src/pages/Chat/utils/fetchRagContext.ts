@@ -16,7 +16,7 @@ export interface RagContextResult {
  * 2. Searching the vector database for relevant documents
  * 3. Formatting the retrieved context
  */
-export const getRagContext = async (userQuery: string): Promise<RagContextResult> => {
+export default async (userQuery: string): Promise<RagContextResult> => {
     try {
         // Step 1: Get embedding for the user's query
         console.log('📊 Step 1: Getting embedding for query...');

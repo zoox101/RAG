@@ -1,4 +1,4 @@
-import { getRagContext } from "./getRagContext";
+import fetchRagContext from "./fetchRagContext";
 import { loadTemplate } from "./loadTemplate";
 
 export default async function getFinalPrompt (useRagMode: boolean, currentUserMessage: string) {
@@ -6,7 +6,7 @@ export default async function getFinalPrompt (useRagMode: boolean, currentUserMe
     let finalPrompt = '';
     if (useRagMode) {
         // Get RAG context using the utility
-        const ragResult = await getRagContext(currentUserMessage);
+        const ragResult = await fetchRagContext(currentUserMessage);
         
         if (!ragResult.success) {
             throw new Error(ragResult.error || 'Failed to get RAG context');
