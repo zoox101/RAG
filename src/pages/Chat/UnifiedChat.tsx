@@ -19,7 +19,7 @@ const UnifiedChat: React.FC = () => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [messages]);
+    }, [messages, isLoading]);
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,7 +70,7 @@ const UnifiedChat: React.FC = () => {
             {/* Messages area */}
             <div className="messages-container">
                 <div className="messages-scroll-area">
-                    {messages.length === 0 && (
+                    {messages.length === 0 && !isLoading && (
                         <div className="empty-state">
                             {useRagMode 
                                 ? 'Start a conversation with RAG-enhanced responses! 🚀'
@@ -80,31 +80,43 @@ const UnifiedChat: React.FC = () => {
                     )}
                     {messages.map((message, index) => {
                         const isYou = message.sender === 'You';
+                        const isAssistant = message.sender === 'Friend';
+                        const showLoading = isAssistant && message.text === '' && isLoading;
+                        
                         return (
                             <div
                                 key={index}
                                 className={`message-wrapper ${isYou ? 'user' : 'assistant'}`}
                             >
-                                <div className={`message-bubble ${isYou ? 'user' : 'assistant'}`}>
-                                    <ReactMarkdown
-                                        components={{
-                                            p: ({ node, ...props }) => <p className="markdown-paragraph">{props.children}</p>,
-                                            ul: ({ node, ...props }) => <ul className="markdown-list">{props.children}</ul>,
-                                            ol: ({ node, ...props }) => <ol className="markdown-list">{props.children}</ol>,
-                                            li: ({ node, ...props }) => <li className="markdown-list-item">{props.children}</li>,
-                                            pre: ({ node, ...props }) => <pre className="markdown-pre">{props.children}</pre>,
-                                            code: ({ node, ...props }) => <code className="markdown-code">{props.children}</code>,
-                                            h1: ({ node, ...props }) => <h1 className="markdown-heading-1">{props.children}</h1>,
-                                            h2: ({ node, ...props }) => <h2 className="markdown-heading-2">{props.children}</h2>,
-                                            h3: ({ node, ...props }) => <h3 className="markdown-heading-3">{props.children}</h3>,
-                                        }}
-                                    >
-                                        {message.text}
-                                    </ReactMarkdown>
+                                <div className={`message-bubble ${isYou ? 'user' : 'assistant'} ${showLoading ? 'loading-bubble' : ''}`}>
+                                    {showLoading ? (
+                                        <div className="loading-dots">
+                                            <span className="dot"></span>
+                                            <span className="dot"></span>
+                                            <span className="dot"></span>
+                                        </div>
+                                    ) : (
+                                        <ReactMarkdown
+                                            components={{
+                                                p: ({ node, ...props }) => <p className="markdown-paragraph">{props.children}</p>,
+                                                ul: ({ node, ...props }) => <ul className="markdown-list">{props.children}</ul>,
+                                                ol: ({ node, ...props }) => <ol className="markdown-list">{props.children}</ol>,
+                                                li: ({ node, ...props }) => <li className="markdown-list-item">{props.children}</li>,
+                                                pre: ({ node, ...props }) => <pre className="markdown-pre">{props.children}</pre>,
+                                                code: ({ node, ...props }) => <code className="markdown-code">{props.children}</code>,
+                                                h1: ({ node, ...props }) => <h1 className="markdown-heading-1">{props.children}</h1>,
+                                                h2: ({ node, ...props }) => <h2 className="markdown-heading-2">{props.children}</h2>,
+                                                h3: ({ node, ...props }) => <h3 className="markdown-heading-3">{props.children}</h3>,
+                                            }}
+                                        >
+                                            {message.text}
+                                        </ReactMarkdown>
+                                    )}
                                 </div>
                             </div>
                         );
                     })}
+                    
                     <div ref={messagesEndRef} />
                 </div>
             </div>

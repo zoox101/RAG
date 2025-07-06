@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { submitMessageToLLM } from './submitMessageToLLM';
 import getPrompt from './getPrompt';
 
@@ -27,7 +27,7 @@ export const useChat = (useRagMode: boolean = true) => {
     
     // Loading state to prevent multiple simultaneous requests
     const [isLoading, setIsLoading] = useState(false);
-    
+
     /**
      * Creates a placeholder message for streaming updates
      */
