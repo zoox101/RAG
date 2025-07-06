@@ -1,11 +1,19 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useUnifiedChat, Message } from './useUnifiedChat';
+import { useRag, Message } from './useRag';
+import { useChat } from './useChat';
 import './UnifiedChat.css';
 
 const UnifiedChat: React.FC = () => {
-    const [useRag, setUseRag] = useState(true);
-    const { messages, setMessages, isLoading } = useUnifiedChat(useRag);
+    const [useRagMode, setUseRagMode] = useState(true);
+    
+    // Use the appropriate hook based on the mode
+    const ragHook = useRag();
+    const chatHook = useChat();
+    
+    // Select the active hook based on the mode
+    const { messages, setMessages, isLoading } = useRagMode ? ragHook : chatHook;
+    
     const [newMessageText, setNewMessageText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -33,14 +41,14 @@ const UnifiedChat: React.FC = () => {
             {/* Header with controls */}
             <div className="chat-header">
                 <h2>
-                    {useRag ? 'Chat with RAG' : 'Chat'}
+                    {useRagMode ? 'Chat with RAG' : 'Chat'}
                 </h2>
                 <div className="chat-controls">
                     <label className="rag-toggle-label">
                         <input
                             type="checkbox"
-                            checked={useRag}
-                            onChange={(e) => setUseRag(e.target.checked)}
+                            checked={useRagMode}
+                            onChange={(e) => setUseRagMode(e.target.checked)}
                             className="rag-toggle-checkbox"
                         />
                         Enable RAG
@@ -55,7 +63,7 @@ const UnifiedChat: React.FC = () => {
             </div>
 
             {/* Status indicator */}
-            {useRag && (
+            {useRagMode && (
                 <div className="rag-status-indicator">
                     🔍 RAG Mode: Enhanced responses with vector search and context retrieval
                 </div>
@@ -66,7 +74,7 @@ const UnifiedChat: React.FC = () => {
                 <div className="messages-scroll-area">
                     {messages.length === 0 && (
                         <div className="empty-state">
-                            {useRag 
+                            {useRagMode 
                                 ? 'Start a conversation with RAG-enhanced responses! 🚀'
                                 : 'Start a conversation! 💬'
                             }

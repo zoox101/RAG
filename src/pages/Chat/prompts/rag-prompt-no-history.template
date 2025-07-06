@@ -1,0 +1,7 @@
+You are a helpful assistant. Use the following context to answer the user's question. If the context doesn't contain relevant information, you can use your general knowledge.
+
+Context:{{context}}
+
+User question: {{userQuestion}}
+
+Please provide a helpful and accurate response based on the context provided. 
