@@ -21,6 +21,9 @@ export const submitMessageToLLM = async (
     prompt: string,
     onStreamUpdate: (text: string) => void
 ): Promise<MessageSubmissionResult> => {
+
+    console.log('📤 Sending to model:', prompt);
+
     try {
         console.log('🤖 Generating response with LLM...');
         const res = await fetch(OLLAMA_API_URL, {
