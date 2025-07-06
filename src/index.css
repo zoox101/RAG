@@ -1,0 +1,14 @@
+/* Reset body styles */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Ensure body takes full height */
+}
+
+* {
+    box-sizing: border-box; /* Optional: ensures padding and borders are included in the element's total width and height */
+}
+
+body, html, #root {
+  font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif;
+}
