@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type Page = 'chat' | 'vector-search' | 'ollama-test';
+export type Page = 'chat' | 'vector-search' | 'ollama-test' | 'vector-store-manager';
 
 interface NavigationProps {
     currentPage: Page;
@@ -87,6 +87,25 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange }) =>
                         }}
                     >
                         ⚡ Ollama Test
+                    </button>
+                    <button
+                        onClick={() => onPageChange('vector-store-manager')}
+                        style={{
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            background: currentPage === 'vector-store-manager' ? '#007aff' : '#e9ecef',
+                            color: currentPage === 'vector-store-manager' ? 'white' : '#495057',
+                            fontWeight: currentPage === 'vector-store-manager' ? '600' : '400',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            transition: 'all 0.2s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                        }}
+                    >
+                        🗄️ Vector Store
                     </button>
                 </div>
             </div>

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import UnifiedChat from "./pages/Chat/UnifiedChat";
 import VectorSearch from "./pages/VectorSearch/VectorSearch";
 import OllamaTest from "./pages/OllamaTest/OllamaTest";
+import VectorStoreManager from "./pages/VectorStoreManager/VectorStoreManager";
 import Navigation, { Page } from "./components/Navigation";
 
 //------------------------------------------------------------------------------------------------//
@@ -25,6 +26,8 @@ function App() {
                 return <VectorSearch />;
             case 'ollama-test':
                 return <OllamaTest />;
+            case 'vector-store-manager':
+                return <VectorStoreManager />;
             default:
                 return <UnifiedChat />;
         }
