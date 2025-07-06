@@ -16,7 +16,7 @@ export type ActiveLog = {
 }
 
 function App() {
-    const [currentPage, setCurrentPage] = useState<Page>('chat');
+    const [currentPage, setCurrentPage] = useState<Page>('chat-with-rag');
 
     const renderCurrentPage = () => {
         switch (currentPage) {
@@ -29,7 +29,7 @@ function App() {
             case 'ollama-test':
                 return <OllamaTest />;
             default:
-                return <Chat />;
+                return <ChatWithRag />;
         }
     };
 
