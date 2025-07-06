@@ -71,70 +71,49 @@ export const useChat = (useRagMode: boolean = true) => {
     useEffect(() => {
         // Don't process if already loading a response
         if (isLoading) return;
-        
-        // Find the most recent user message that hasn't been responded to yet
-        let lastUserIndex = -1;
-        for (let i = messages.length - 1; i >= 0; i--) {
-            if (messages[i].sender === 'You') {
-                lastUserIndex = i;
-                break;
-            }
+
+        // Return if the there is no last message or the last message is not a user message
+        const lastMessage = messages[messages.length - 1];
+        if (!lastMessage || lastMessage.sender !== "You") {
+            return;
         }
         
-        // Check if we need to generate a response:
-        // 1. We found a user message (lastUserIndex !== -1)
-        // 2. Either there are no messages after it OR the next message isn't from Friend
-        // 3. We haven't already responded to this message
-        if (
-            lastUserIndex !== -1 &&
-            (messages.length === lastUserIndex + 1 || messages[lastUserIndex + 1].sender !== 'Friend') &&
-            lastRespondedIndex.current !== lastUserIndex
-        ) {
-            const currentUserMessage = messages[lastUserIndex].text;
+        // Set loading state to prevent duplicate requests
+        setIsLoading(true);
+        
+        // Async function to handle the response generation
+        (async () => {
+            // Create a placeholder message that will be updated with streaming content
+            createPlaceholderMessage();
+
+            // Determine the system type for logging and error messages
+            const systemType = useRagMode ? 'RAG' : 'Chat';
+            console.log(`🚀 Starting ${systemType} process for query:`, lastMessage.text);
+
+            // Get the final prompt (either with RAG context or simple chat)
+            const finalPrompt = await getPrompt(messages, useRagMode);
             
-            // Log the type of process we're starting
-            if (useRagMode) {
-                console.log('🚀 Starting RAG process for query:', currentUserMessage);
-            } else {
-                console.log('💬 Starting regular chat for query:', currentUserMessage);
+            // Submit the prompt to the LLM and handle streaming response
+            const result = await submitMessageToLLM(
+                finalPrompt,
+                (text: string) => updateLastFriendMessage(text)
+            );
+
+            // Handle any errors from the LLM response
+            if (!result.success) {
+                const errorMessage = `Error getting response from ${systemType} system.` 
+                addErrorMessage(errorMessage);
             }
+
+            console.log(`✅ ${systemType} process completed successfully!`);
+
+            // Mark this message as responded to
+            lastRespondedIndex.current = messages.length - 1;
             
-            // Set loading state to prevent duplicate requests
-            setIsLoading(true);
-            
-            // Async function to handle the response generation
-            (async () => {
-                // Create a placeholder message that will be updated with streaming content
-                createPlaceholderMessage();
-
-                // Determine the system type for logging and error messages
-                const systemType = useRagMode ? 'RAG' : 'Chat';
-                
-                // Get the final prompt (either with RAG context or simple chat)
-                const finalPrompt = await getPrompt(messages, useRagMode);
-                
-                // Submit the prompt to the LLM and handle streaming response
-                const result = await submitMessageToLLM(
-                    finalPrompt,
-                    (text: string) => updateLastFriendMessage(text)
-                );
-
-                // Handle any errors from the LLM response
-                if (!result.success) {
-                    const errorMessage = `Error getting response from ${systemType} system.` 
-                    addErrorMessage(errorMessage);
-                }
-
-                console.log(`✅ ${systemType} process completed successfully!`);
-
-                // Mark this message as responded to
-                lastRespondedIndex.current = lastUserIndex;
-                
-                // Clear loading state
-                setIsLoading(false);
-                console.log('🏁 Chat process finished');
-            })();
-        }
+            // Clear loading state
+            setIsLoading(false);
+            console.log('🏁 Chat process finished');
+        })();
     }, [messages, isLoading, useRagMode]);
 
     return {
