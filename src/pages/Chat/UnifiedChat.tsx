@@ -1,19 +1,17 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useRag, Message } from './useRag';
-import { useChat } from './useChat';
+import { useUnifiedChat } from './useUnifiedChat';
 import './UnifiedChat.css';
+
+// Define Message interface locally since it's not exported from useUnifiedChat
+interface Message {
+    text: string;
+    sender: string;
+}
 
 const UnifiedChat: React.FC = () => {
     const [useRagMode, setUseRagMode] = useState(true);
-    
-    // Use the appropriate hook based on the mode
-    const ragHook = useRag();
-    const chatHook = useChat();
-    
-    // Select the active hook based on the mode
-    const { messages, setMessages, isLoading } = useRagMode ? ragHook : chatHook;
-    
+    const { messages, setMessages, isLoading } = useUnifiedChat(useRagMode);
     const [newMessageText, setNewMessageText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
