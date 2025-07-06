@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type Page = 'chat' | 'chat-with-rag' | 'vector-search' | 'ollama-test';
+export type Page = 'chat' | 'vector-search' | 'ollama-test';
 
 interface NavigationProps {
     currentPage: Page;
@@ -31,22 +31,6 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange }) =>
                     RAG System
                 </h1>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                        onClick={() => onPageChange('chat-with-rag')}
-                        style={{
-                            padding: '8px 16px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            background: currentPage === 'chat-with-rag' ? '#007aff' : '#e9ecef',
-                            color: currentPage === 'chat-with-rag' ? 'white' : '#495057',
-                            fontWeight: currentPage === 'chat-with-rag' ? '600' : '400',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            transition: 'all 0.2s ease'
-                        }}
-                    >
-                        Chat with RAG
-                    </button>
                     <button
                         onClick={() => onPageChange('chat')}
                         style={{

@@ -2,8 +2,7 @@
 
 import { PercentAllocation } from "./types";
 import React, { useState } from "react";
-import Chat from "./pages/Chat/Chat";
-import ChatWithRag from "./pages/ChatWithRag/ChatWithRag";
+import UnifiedChat from "./pages/Chat/UnifiedChat";
 import VectorSearch from "./pages/VectorSearch/VectorSearch";
 import OllamaTest from "./pages/OllamaTest/OllamaTest";
 import Navigation, { Page } from "./components/Navigation";
@@ -16,20 +15,18 @@ export type ActiveLog = {
 }
 
 function App() {
-    const [currentPage, setCurrentPage] = useState<Page>('chat-with-rag');
+    const [currentPage, setCurrentPage] = useState<Page>('chat');
 
     const renderCurrentPage = () => {
         switch (currentPage) {
             case 'chat':
-                return <Chat />;
-            case 'chat-with-rag':
-                return <ChatWithRag />;
+                return <UnifiedChat />;
             case 'vector-search':
                 return <VectorSearch />;
             case 'ollama-test':
                 return <OllamaTest />;
             default:
-                return <ChatWithRag />;
+                return <UnifiedChat />;
         }
     };
 
