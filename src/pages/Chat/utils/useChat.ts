@@ -111,7 +111,7 @@ export const useChat = (useRagMode: boolean = true) => {
                 const systemType = useRagMode ? 'RAG' : 'Chat';
                 
                 // Get the final prompt (either with RAG context or simple chat)
-                const finalPrompt = await getPrompt(useRagMode, currentUserMessage);
+                const finalPrompt = await getPrompt(messages, useRagMode);
                 
                 // Submit the prompt to the LLM and handle streaming response
                 const result = await submitMessageToLLM(
