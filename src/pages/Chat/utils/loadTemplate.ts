@@ -16,7 +16,7 @@ export const TEMPLATE_NAMES = {
 /**
  * Simple template processor that replaces {{variable}} placeholders
  */
-export const processTemplate = (template: string, context: PromptContext): string => {
+const processTemplate = (template: string, context: PromptContext): string => {
     let result = template;
     
     // Replace all {{variable}} placeholders with actual values
@@ -33,7 +33,7 @@ export const processTemplate = (template: string, context: PromptContext): strin
 /**
  * Load a template file and process it with the given context
  */
-export const loadAndProcessTemplate = async (
+export const loadTemplate = async (
     templateName: string, 
     context: PromptContext
 ): Promise<string> => {

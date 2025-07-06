@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useUnifiedChat } from './useUnifiedChat';
+import { useUnifiedChat } from './utils/useUnifiedChat';
 import './UnifiedChat.css';
 
 // Define Message interface locally since it's not exported from useUnifiedChat

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { loadAndProcessTemplate, TEMPLATE_NAMES } from './prompts';
+import { loadTemplate, TEMPLATE_NAMES } from './loadTemplate';
 import { 
     submitMessageToLLM, 
     createPlaceholderMessage, 
@@ -22,7 +22,7 @@ const getFinalPrompt = async (useRagMode: boolean, currentUserMessage: string) =
         }
 
         // Create enhanced prompt with retrieved context
-        finalPrompt = await loadAndProcessTemplate(TEMPLATE_NAMES.RAG_NO_HISTORY, {
+        finalPrompt = await loadTemplate(TEMPLATE_NAMES.RAG_NO_HISTORY, {
             context: ragResult.context || '',
             userQuestion: currentUserMessage
         });
@@ -30,7 +30,7 @@ const getFinalPrompt = async (useRagMode: boolean, currentUserMessage: string) =
         console.log('🎯 Enhanced prompt created:', finalPrompt);
     } else {
         // Create simple prompt without conversation history
-        finalPrompt = await loadAndProcessTemplate(TEMPLATE_NAMES.SIMPLE, {
+        finalPrompt = await loadTemplate(TEMPLATE_NAMES.SIMPLE, {
             userQuestion: currentUserMessage
         });
     }
@@ -66,39 +66,30 @@ export const useUnifiedChat = (useRagMode: boolean = true) => {
             
             setIsLoading(true);
             (async () => {
-                try {
-                    // Create placeholder message for streaming
-                    createPlaceholderMessage(setMessages);
+                // Create placeholder message for streaming
+                createPlaceholderMessage(setMessages);
 
-                    const systemType = useRagMode ? 'RAG' : 'Chat';
-                    const finalPrompt = await getFinalPrompt(useRagMode, currentUserMessage);
+                const systemType = useRagMode ? 'RAG' : 'Chat';
+                const finalPrompt = await getFinalPrompt(useRagMode, currentUserMessage);
 
-                    console.log('📤 Sending to model:', finalPrompt);
+                console.log('📤 Sending to model:', finalPrompt);
 
-                    // Submit message to LLM using shared logic
-                    const result = await submitMessageToLLM(
-                        finalPrompt,
-                        (text) => updateLastFriendMessage(setMessages, text)
-                    );
+                // Submit message to LLM using shared logic
+                const result = await submitMessageToLLM(
+                    finalPrompt,
+                    (text) => updateLastFriendMessage(setMessages, text)
+                );
 
-                    if (!result.success) {
-                        const errorMessage = `Error getting response from ${systemType} system.` 
-                        addErrorMessage(setMessages, errorMessage);
-                    }
-
-                    console.log(`✅ ${systemType} process completed successfully!`);
-
-                    lastRespondedIndex.current = lastUserIndex;
-                } catch (err) {
-                    console.error('❌ Error in chat process:', err);
-                    const systemType = useRagMode ? 'RAG' : 'Chat';
-                    const errorMessage = `Error getting response from ${systemType} system.`;
+                if (!result.success) {
+                    const errorMessage = `Error getting response from ${systemType} system.` 
                     addErrorMessage(setMessages, errorMessage);
-                    lastRespondedIndex.current = lastUserIndex;
-                } finally {
-                    setIsLoading(false);
-                    console.log('🏁 Chat process finished');
                 }
+
+                console.log(`✅ ${systemType} process completed successfully!`);
+
+                lastRespondedIndex.current = lastUserIndex;
+                setIsLoading(false);
+                console.log('🏁 Chat process finished');
             })();
         }
     }, [messages, isLoading, useRagMode]);
