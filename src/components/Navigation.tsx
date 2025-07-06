@@ -28,7 +28,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange }) =>
                     fontWeight: '600',
                     color: '#212529'
                 }}>
-                    RAG System
+                    🤖 RAG
                 </h1>
                 <div style={{ display: 'flex', gap: '8px' }}>
                     <button
@@ -42,10 +42,13 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange }) =>
                             fontWeight: currentPage === 'chat' ? '600' : '400',
                             cursor: 'pointer',
                             fontSize: '14px',
-                            transition: 'all 0.2s ease'
+                            transition: 'all 0.2s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
                         }}
                     >
-                        Chat
+                        💬 AI Chat
                     </button>
                     <button
                         onClick={() => onPageChange('vector-search')}
@@ -58,10 +61,13 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange }) =>
                             fontWeight: currentPage === 'vector-search' ? '600' : '400',
                             cursor: 'pointer',
                             fontSize: '14px',
-                            transition: 'all 0.2s ease'
+                            transition: 'all 0.2s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
                         }}
                     >
-                        Vector Search
+                        🔍 Vector Search
                     </button>
                     <button
                         onClick={() => onPageChange('ollama-test')}
@@ -74,10 +80,13 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange }) =>
                             fontWeight: currentPage === 'ollama-test' ? '600' : '400',
                             cursor: 'pointer',
                             fontSize: '14px',
-                            transition: 'all 0.2s ease'
+                            transition: 'all 0.2s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
                         }}
                     >
-                        Ollama Test
+                        ⚡ Ollama Test
                     </button>
                 </div>
             </div>
