@@ -28,9 +28,6 @@ export const useChat = (useRagMode: boolean = true) => {
     // Loading state to prevent multiple simultaneous requests
     const [isLoading, setIsLoading] = useState(false);
     
-    // Ref to track the last message index we've responded to (prevents duplicate responses)
-    const lastRespondedIndex = useRef<number>(messages.length - 1);
-
     /**
      * Creates a placeholder message for streaming updates
      */
@@ -90,10 +87,8 @@ export const useChat = (useRagMode: boolean = true) => {
             const systemType = useRagMode ? 'RAG' : 'Chat';
             console.log(`🚀 Starting ${systemType} process for query:`, lastMessage.text);
 
-            // Get the final prompt (either with RAG context or simple chat)
-            const finalPrompt = await getPrompt(messages, useRagMode);
-            
-            // Submit the prompt to the LLM and handle streaming response
+            // Getting the prompt and submitting it to the LLM
+            const finalPrompt = await getPrompt(messages, useRagMode);            
             const result = await submitMessageToLLM(
                 finalPrompt,
                 (text: string) => updateLastFriendMessage(text)
@@ -106,9 +101,6 @@ export const useChat = (useRagMode: boolean = true) => {
             }
 
             console.log(`✅ ${systemType} process completed successfully!`);
-
-            // Mark this message as responded to
-            lastRespondedIndex.current = messages.length - 1;
             
             // Clear loading state
             setIsLoading(false);
