@@ -1,9 +1,4 @@
-// Shared message submission logic for chat and RAG
-
-export interface Message {
-    text: string;
-    sender: string;
-}
+// LLM message submission logic
 
 const OLLAMA_API_URL = 'http://localhost:11434/api/generate';
 const OLLAMA_MODEL = 'llama3.2';
@@ -16,6 +11,10 @@ export interface MessageSubmissionResult {
 
 /**
  * Submits a prompt to the LLM and returns the streaming response
+ * 
+ * @param prompt - The prompt to send to the LLM
+ * @param onStreamUpdate - Callback function called with each streaming update
+ * @returns Promise that resolves to a MessageSubmissionResult
  */
 export const submitMessageToLLM = async (
     prompt: string,
@@ -77,47 +76,4 @@ export const submitMessageToLLM = async (
             error: error instanceof Error ? error.message : 'Unknown error occurred'
         };
     }
-};
-
-/**
- * Creates a placeholder message for streaming updates
- */
-export const createPlaceholderMessage = (setMessages: React.Dispatch<React.SetStateAction<Message[]>>): void => {
-    setMessages(prev => [
-        ...prev,
-        { text: '', sender: 'Friend' }
-    ]);
-};
-
-/**
- * Updates the last Friend message with streaming text
- */
-export const updateLastFriendMessage = (
-    setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
-    text: string
-): void => {
-    setMessages(prev => {
-        const updated = [...prev];
-        // Find the last Friend message (should be the one we just added)
-        for (let i = updated.length - 1; i >= 0; i--) {
-            if (updated[i].sender === 'Friend') {
-                updated[i] = { ...updated[i], text };
-                break;
-            }
-        }
-        return updated;
-    });
-};
-
-/**
- * Adds an error message to the chat
- */
-export const addErrorMessage = (
-    setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
-    errorMessage: string
-): void => {
-    setMessages(prev => [
-        ...prev,
-        { text: errorMessage, sender: 'Friend' }
-    ]);
 }; 

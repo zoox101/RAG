@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useUnifiedChat } from './utils/useUnifiedChat';
+import { useChat } from './utils/useChat';
 import './UnifiedChat.css';
 
 // Define Message interface locally since it's not exported from useUnifiedChat
@@ -11,7 +11,7 @@ interface Message {
 
 const UnifiedChat: React.FC = () => {
     const [useRagMode, setUseRagMode] = useState(true);
-    const { messages, setMessages, isLoading } = useUnifiedChat(useRagMode);
+    const { messages, setMessages, isLoading } = useChat(useRagMode);
     const [newMessageText, setNewMessageText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
