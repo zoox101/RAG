@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  ollama:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile.ollama
+    container_name: ollama-rag
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - ollama-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  vectorstore:
+    build:
+      context: ./vector_store
+      dockerfile: Dockerfile.vectorstore
+    container_name: vectorstore-rag
+    ports:
+      - "8000:8000"
+    volumes:
+      - vectorstore_data:/app/LOCAL
+    environment:
+      - OLLAMA_HOST=ollama
+      - OLLAMA_PORT=11434
+    restart: unless-stopped
+    networks:
+      - ollama-network
+
+volumes:
+  ollama_data:
+    driver: local
+  vectorstore_data:
+    driver: local
+
+networks:
+  ollama-network:
+    driver: bridge 

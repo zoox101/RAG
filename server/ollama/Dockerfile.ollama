@@ -1,0 +1,12 @@
+FROM ollama/ollama:latest
+
+# Create a startup script
+RUN echo '#!/bin/bash\n\
+ollama serve &\n\
+sleep 10\n\
+ollama pull llama3.2\n\
+ollama pull nomic-embed-text\n\
+wait' > /start.sh && chmod +x /start.sh
+
+# Use the startup script as entrypoint
+ENTRYPOINT ["/start.sh"] 
