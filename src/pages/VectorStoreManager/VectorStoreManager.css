@@ -180,6 +180,17 @@
     box-shadow: 0 4px 8px rgba(237, 137, 54, 0.3);
 }
 
+.btn-success {
+    background: #38a169;
+    color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+    background: #2f855a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(56, 161, 105, 0.3);
+}
+
 .btn-small {
     padding: 6px 12px;
     font-size: 12px;

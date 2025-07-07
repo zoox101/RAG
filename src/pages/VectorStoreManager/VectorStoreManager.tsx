@@ -23,6 +23,7 @@ const VectorStoreManager: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [uploading, setUploading] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [loadingDataset, setLoadingDataset] = useState(false);
 
     // Fetch collection info and documents
     const fetchCollectionData = async () => {
@@ -154,6 +155,34 @@ const VectorStoreManager: React.FC = () => {
         }
     };
 
+    // Load Wikipedia dataset
+    const handleLoadDataset = async () => {
+        if (!confirm('This will download the Wikipedia dataset (~3,200 documents), generate embeddings, and add them to the collection. This may take several minutes. Continue?')) {
+            return;
+        }
+
+        try {
+            setLoadingDataset(true);
+            setError(null);
+
+            const response = await fetch('http://localhost:8000/collection/load-dataset', {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load dataset');
+            }
+
+            const result = await response.json();
+            alert(`Success! ${result.message}`);
+            await fetchCollectionData();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to load dataset');
+        } finally {
+            setLoadingDataset(false);
+        }
+    };
+
     // Toggle document selection
     const toggleDocumentSelection = (id: string) => {
         const newSelected = new Set(selectedDocuments);
@@ -230,6 +259,14 @@ const VectorStoreManager: React.FC = () => {
                         onClick={() => setShowAddForm(!showAddForm)}
                     >
                         ➕ Add Document
+                    </button>
+                    
+                    <button 
+                        className="btn btn-success"
+                        onClick={handleLoadDataset}
+                        disabled={loadingDataset}
+                    >
+                        {loadingDataset ? '📥 Loading Dataset...' : '📥 Load Wikipedia Dataset'}
                     </button>
                     
                     {selectedDocuments.size > 0 && (

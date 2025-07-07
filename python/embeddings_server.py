@@ -5,6 +5,8 @@ from pydantic import BaseModel
 import chromadb
 import requests
 import uuid
+import pandas as pd
+import os
 from typing import List, Optional, Dict, Any
 
 app = FastAPI()
@@ -132,3 +134,79 @@ def clear_collection():
     except Exception as e:
         print(f"Error clearing collection: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to clear collection: {str(e)}")
+
+@app.post("/collection/load-dataset")
+def load_dataset():
+    """Load the Wikipedia dataset, generate embeddings, and add to collection"""
+    try:
+        # Ensure LOCAL directory exists
+        os.makedirs("./python/LOCAL", exist_ok=True)
+        
+        LOCAL_FNAME = "./python/LOCAL/raw.parquet"
+        PROCESSED_FNAME = "./python/LOCAL/processed.parquet"
+        
+        # Step 1: Download dataset if not exists
+        if not os.path.exists(LOCAL_FNAME):
+            print("Downloading dataset...")
+            df = pd.read_parquet("hf://datasets/rag-datasets/rag-mini-wikipedia/data/passages.parquet/part.0.parquet")
+            df.to_parquet(LOCAL_FNAME)
+            print(f"Downloaded dataset with shape: {df.shape}")
+        else:
+            print("Loading existing dataset...")
+            df = pd.read_parquet(LOCAL_FNAME)
+            print(f"Loaded dataset with shape: {df.shape}")
+        
+        # Step 2: Generate embeddings if not exists
+        if not os.path.exists(PROCESSED_FNAME):
+            print("Generating embeddings...")
+            # Generate embeddings for all passages
+            embeddings = []
+            total_passages = len(df)
+            
+            for i, passage in enumerate(df['passage']):
+                try:
+                    embedding = get_embedding(passage)
+                    embeddings.append(embedding)
+                    
+                    # Progress update every 100 passages
+                    if (i + 1) % 100 == 0:
+                        print(f"Processed {i + 1}/{total_passages} passages")
+                        
+                except Exception as e:
+                    print(f"Error generating embedding for passage {i}: {str(e)}")
+                    # Use a zero vector as fallback
+                    embeddings.append([0.0] * 768)  # Assuming 768-dimensional embeddings
+            
+            df['embedding'] = embeddings
+            df.to_parquet(PROCESSED_FNAME)
+            print("Embeddings generated and saved")
+        else:
+            print("Loading existing embeddings...")
+            df = pd.read_parquet(PROCESSED_FNAME)
+        
+        # Step 3: Clear existing collection and add new documents
+        print("Clearing existing collection...")
+        results = collection.get()
+        if results['ids']:
+            collection.delete(ids=results['ids'])
+        
+        print("Adding documents to collection...")
+        # Add vectors to collection
+        collection.add(
+            embeddings=df["embedding"].to_list(),
+            documents=df["passage"].to_list(),
+            ids=[str(val) for val in df.index]
+        )
+        
+        print(f"Successfully added {len(df)} documents to collection")
+        
+        return {
+            "success": True,
+            "message": f"Dataset loaded successfully! Added {len(df)} documents to the collection.",
+            "documents_added": len(df),
+            "dataset_shape": df.shape
+        }
+        
+    except Exception as e:
+        print(f"Error loading dataset: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to load dataset: {str(e)}")
