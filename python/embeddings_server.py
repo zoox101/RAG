@@ -21,7 +21,12 @@ app.add_middleware(
 )
 
 client = chromadb.PersistentClient(path="./python/LOCAL/chroma_db")  
-collection = client.get_collection("chunks")
+
+# Create collection if it doesn't exist, otherwise get existing one
+try:
+    collection = client.get_collection("chunks")
+except chromadb.errors.NotFoundError:
+    collection = client.create_collection("chunks")
 
 class VectorQueryRequest(BaseModel):
     vector: list[float]
