@@ -41,7 +41,7 @@ The React application will be available at `http://localhost:5173` (or the next 
 
 ## Architecture & Design Decisions
 
-This RAG implementation follows a three-stage pipeline for retrieval and generation: (1) user queries are converted to vector embeddings using the `nomic-embed-text` model via Ollama, (2) ChromaDB performs similarity search to retrieve relevant documents from the knowledge base, and (3) the retrieved context is combined with the user query and sent to the LLM for response generation. The backend architecture uses a microservices approach with dedicated containers for Ollama (LLM inference and embedding generation), FastAPI (ChromaDB operations and document retrieval), and React (user interactions and response streaming). Key design decisions include separation of concerns with isolated embedding generation, centralized vector operations, and direct streaming from Ollama to frontend for real-time user experience. The system uses template-based prompting to combine retrieved context with user queries, retrieves the most relevant documents based on vector similarity, and includes pre-computed embeddings for the Wikipedia dataset to optimize performance while maintaining local processing for privacy and cost control.
+This RAG implementation follows a three-stage pipeline for retrieval and generation: (1) user queries are converted to vector embeddings using the `nomic-embed-text` model via Ollama, (2) ChromaDB performs similarity search to retrieve relevant documents from the knowledge base, and (3) the retrieved context is combined with the user query and sent to the LLM for response generation. The backend architecture uses a microservices approach with dedicated containers for Ollama (LLM inference and embedding generation), FastAPI (ChromaDB operations and document retrieval), and React (user interactions and response streaming). The system uses template-based prompting to combine retrieved context with user queries, retrieves the most relevant documents based on vector similarity, and includes pre-computed embeddings for the Wikipedia dataset to optimize performance while maintaining local processing for privacy and cost control. 
 
 ## License
 
@@ -107,34 +107,6 @@ MIT License. See [LICENSE](LICENSE) file for details.
 - **Limited horizontal scaling**: Difficult to scale across multiple machines
 - **No built-in authentication**: No user management or access controls
 - **Fixed embedding model**: Uses `nomic-embed-text` which may not be optimal for all use cases
-
-### **Data Management**
-
-**✅ Pros:**
-- **Persistent storage**: ChromaDB provides reliable local data persistence
-- **Vector search efficiency**: Fast similarity search across large document collections
-- **Embedding caching**: Pre-computed embeddings for faster retrieval
-- **Local data control**: Complete ownership and control over your data
-
-**❌ Cons:**
-- **Manual data ingestion**: No automated data pipeline or real-time updates
-- **Limited data sources**: Currently supports only the included Wikipedia dataset
-- **No data versioning**: No built-in version control for knowledge base updates
-- **No backup/replication**: Data stored locally without redundancy
-
-### **Development Experience**
-
-**✅ Pros:**
-- **Quick setup**: Docker Compose makes initial deployment straightforward
-- **Modern tech stack**: React, TypeScript, FastAPI, and modern tooling
-- **Open source**: Full access to source code for customization
-- **Educational value**: Great for learning RAG implementation concepts
-
-**❌ Cons:**
-- **Limited error handling**: Basic error recovery and user feedback
-- **No monitoring**: No built-in logging, metrics, or performance monitoring
-- **Testing coverage**: Limited automated testing for complex RAG workflows
-- **Documentation**: Basic documentation focused on setup rather than advanced usage
 
 ## When to Use This Application
 
