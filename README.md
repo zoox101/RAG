@@ -17,17 +17,12 @@ The application uses Docker Compose to run the required backend services (Ollama
 
 ```bash
 cd server
-docker-compose up -d
+docker-compose up
 ```
 
 This will start:
 - **Ollama** service on port `11434` (for local LLM inference)
 - **Vector Store** service on port `8000` (FastAPI embeddings server)
-
-You can monitor the services with:
-```bash
-docker-compose logs -f
-```
 
 ### 3. Install Frontend Dependencies
 
