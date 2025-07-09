@@ -47,3 +47,119 @@ The React application will be available at `http://localhost:5173` (or the next 
 ## License
 
 MIT License. See [LICENSE](LICENSE) file for details.
+
+# Tradeoffs
+
+## Feature-by-Feature Analysis
+
+### **No Conversational History**
+
+**✅ Pros:**
+- **Reduces context**: Lower token usage and faster processing per request
+- **Speeds up responses**: No need to process and include previous conversation history
+- **Cleaner interactions**: Each question is treated independently, avoiding confusion from previous context
+- **Memory efficient**: No need to store or manage conversation history in memory
+
+**❌ Cons:**
+- **No conversation continuity**: Cannot reference previous questions or build on earlier responses
+- **Limited context awareness**: Cannot maintain context across multiple related questions
+- **Repetitive explanations**: May need to repeat context that was established in previous messages
+- **No follow-up questions**: Cannot ask clarifying questions based on previous responses
+
+
+### **Local Processing & Privacy**
+
+**✅ Pros:**
+- **Complete data privacy**: All processing happens locally with Ollama and ChromaDB
+- **No API costs**: No external API calls or usage fees
+- **Offline capability**: Works without internet connection once models are downloaded
+- **Customizable models**: Can use any model supported by Ollama
+
+**❌ Cons:**
+- **High resource requirements**: Ollama models require significant RAM (2-8GB+ depending on model)
+- **Storage overhead**: Vector embeddings and model files consume substantial disk space
+- **CPU/GPU intensive**: Local inference is slower than cloud APIs
+- **Initial setup time**: Downloading models and generating embeddings takes time
+
+### **RAG Implementation**
+
+**✅ Pros:**
+- **Context-aware responses**: Retrieves relevant documents before generating responses
+- **Factual accuracy**: Reduces hallucination by grounding responses in retrieved context
+- **Scalable knowledge base**: Can handle large document collections efficiently
+- **Real-time search**: Vector similarity search provides fast document retrieval
+
+**❌ Cons:**
+- **Limited model selection**: Restricted to models available in Ollama ecosystem
+- **Smaller context windows**: Local models typically have smaller context limits than cloud APIs
+- **Inference speed**: Slower response generation compared to optimized cloud services
+- **Model updates**: Manual process to update to newer model versions
+
+### **Architecture & Scalability**
+
+**✅ Pros:**
+- **Docker containerization**: Easy setup and consistent environments
+- **TypeScript frontend**: Type safety and better developer experience
+- **Streaming responses**: Real-time response generation for better UX
+- **Modular architecture**: Separate concerns between frontend, backend, and vector store
+
+**❌ Cons:**
+- **Single-user focused**: Not designed for concurrent multi-user access
+- **Limited horizontal scaling**: Difficult to scale across multiple machines
+- **No built-in authentication**: No user management or access controls
+- **Fixed embedding model**: Uses `nomic-embed-text` which may not be optimal for all use cases
+
+### **Data Management**
+
+**✅ Pros:**
+- **Persistent storage**: ChromaDB provides reliable local data persistence
+- **Vector search efficiency**: Fast similarity search across large document collections
+- **Embedding caching**: Pre-computed embeddings for faster retrieval
+- **Local data control**: Complete ownership and control over your data
+
+**❌ Cons:**
+- **Manual data ingestion**: No automated data pipeline or real-time updates
+- **Limited data sources**: Currently supports only the included Wikipedia dataset
+- **No data versioning**: No built-in version control for knowledge base updates
+- **No backup/replication**: Data stored locally without redundancy
+
+### **Development Experience**
+
+**✅ Pros:**
+- **Quick setup**: Docker Compose makes initial deployment straightforward
+- **Modern tech stack**: React, TypeScript, FastAPI, and modern tooling
+- **Open source**: Full access to source code for customization
+- **Educational value**: Great for learning RAG implementation concepts
+
+**❌ Cons:**
+- **Limited error handling**: Basic error recovery and user feedback
+- **No monitoring**: No built-in logging, metrics, or performance monitoring
+- **Testing coverage**: Limited automated testing for complex RAG workflows
+- **Documentation**: Basic documentation focused on setup rather than advanced usage
+
+## When to Use This Application
+
+**✅ Good For:**
+- **Prototyping RAG systems**: Quick setup for testing RAG concepts
+- **Privacy-sensitive applications**: When data cannot leave local infrastructure
+- **Educational purposes**: Learning about RAG implementation and vector search
+- **Personal knowledge management**: Private document search and Q&A
+- **Offline environments**: Situations requiring disconnected operation
+
+**❌ Not Suitable For:**
+- **Production deployments**: Missing enterprise features like monitoring, auth, scaling
+- **High-traffic applications**: Limited concurrent user support
+- **Real-time data**: No automated data ingestion or updates
+- **Multi-tenant systems**: No user isolation or access controls
+- **Performance-critical applications**: Slower inference compared to cloud APIs
+
+## Future Improvements
+
+**Potential Enhancements:**
+- **Multi-model support**: Allow switching between different LLM and embedding models
+- **Real-time data ingestion**: Automated document processing and embedding updates
+- **User authentication**: Basic user management and access controls
+- **Performance optimization**: Model quantization, caching, and response optimization
+- **Monitoring and logging**: Built-in metrics, error tracking, and performance monitoring
+- **API endpoints**: RESTful API for integration with other applications
+- **Data source connectors**: Support for databases, file systems, and web scraping
