@@ -7,7 +7,7 @@ A React-based RAG (Retrieval-Augmented Generation) application with a FastAPI ba
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/zoox101/RAG.git
 cd RAG
 ```
 
