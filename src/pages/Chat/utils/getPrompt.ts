@@ -3,7 +3,7 @@ import { loadTemplate } from "./loadTemplate";
 import { Message } from "./useChat";
 import getLastMessage from "./getLastMessage";
 
-export default async (messages: Message[], useRagMode: boolean) => {
+export default async (messages: Message[], isRagMode: boolean) => {
 
     const currentMessage = getLastMessage(messages, "You");
 
@@ -11,28 +11,29 @@ export default async (messages: Message[], useRagMode: boolean) => {
         throw new Error("No current message found");
     }
 
-    // Getting the prompt to submit
-    let finalPrompt = '';
-    if (useRagMode) {
-        // Get RAG context using the utility
-        const ragResult = await fetchRagContext(currentMessage.text);
-        
-        if (!ragResult.success) {
-            throw new Error(ragResult.error || 'Failed to get RAG context');
-        }
-
-        // Create enhanced prompt with retrieved context
-        finalPrompt = await loadTemplate("rag", {
-            context: ragResult.context || '',
-            userQuestion: currentMessage.text
-        });
-
-        console.log('🎯 Enhanced prompt created:', finalPrompt);
-    } else {
-        // Create simple prompt without conversation history
-        finalPrompt = await loadTemplate("chat", {
+    // No rag mode, return the simple LLM response
+    if (!isRagMode) {
+        return await loadTemplate("chat", {
             userQuestion: currentMessage.text
         });
     }
+
+    // Get RAG context using the utility
+    const ragResult = await fetchRagContext(currentMessage.text);
+
+    // Handle any errors from the RAG context retrieval
+    if (!ragResult.success) {
+        throw new Error(ragResult.error || 'Failed to get RAG context');
+    }
+
+    // Create enhanced prompt with retrieved context
+    const finalPrompt = await loadTemplate("rag", {
+        context: ragResult.context || '',
+        userQuestion: currentMessage.text
+    });
+
+    console.log('🎯 Enhanced prompt created:', finalPrompt);
+
     return finalPrompt;
+
 }
